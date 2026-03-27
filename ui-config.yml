@@ -1,7 +1,9 @@
 ---
 type: zero-touch
 
-default_width: 30
+# Split view: 35% lab guide left, 65% Terminal right
+default_width: 35
+persist_url_state: true
 
 antora:
   name: modules
@@ -25,7 +27,11 @@ antora:
       label: "Conclusion"
 
 tabs:
-  - name: Terminal
+  - name: Terminal (Bastion)
     url: /wetty
+    type: terminal
+  - name: Terminal (Node)
+    url: /wetty_node
+    type: terminal
 
 skipModuleEnabled: true
