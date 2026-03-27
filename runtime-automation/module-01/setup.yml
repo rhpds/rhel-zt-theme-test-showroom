@@ -1,0 +1,10 @@
+---
+- name: Ensure /tmp/zt-test directory exists on node
+  ansible.builtin.command:
+    cmd: "ssh -o StrictHostKeyChecking=no {{ node_user }}@{{ node_host }} 'mkdir -p /tmp/zt-test'"
+  changed_when: true
+  ignore_errors: true
+
+- name: Report setup complete
+  ansible.builtin.debug:
+    msg: "Module 1 setup complete — /tmp/zt-test created on {{ node_host }}"

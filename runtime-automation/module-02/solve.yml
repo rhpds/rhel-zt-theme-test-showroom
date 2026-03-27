@@ -1,0 +1,9 @@
+---
+- name: Enable and start sshd on node
+  ansible.builtin.command:
+    cmd: "ssh -o StrictHostKeyChecking=no {{ node_user }}@{{ node_host }} 'sudo systemctl enable --now sshd'"
+  changed_when: true
+
+- name: Solve complete
+  ansible.builtin.debug:
+    msg: "Module 2 solved — sshd enabled on {{ node_host }}"

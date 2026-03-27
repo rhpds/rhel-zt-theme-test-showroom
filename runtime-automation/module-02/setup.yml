@@ -1,0 +1,11 @@
+---
+- name: Check sshd status on node
+  ansible.builtin.command:
+    cmd: "ssh -o StrictHostKeyChecking=no {{ node_user }}@{{ node_host }} 'systemctl is-active sshd || true'"
+  register: r_sshd
+  changed_when: false
+  ignore_errors: true
+
+- name: Report setup status
+  ansible.builtin.debug:
+    msg: "sshd on {{ node_host }}: {{ r_sshd.stdout | default('unknown') }}"

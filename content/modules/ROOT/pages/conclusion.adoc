@@ -1,0 +1,23 @@
+= Conclusion
+:imagesdir: ../assets/images
+
+Congratulations — you have completed the RHEL ZT Grading Example lab.
+
+== What was tested
+
+* *Module 1* — ZT grader SSH'd to bastion, then to node to verify file creation
+* *Module 2* — ZT grader verified `sshd` service is active on node via SSH
+
+== How the runner works (RHEL mode)
+
+The `zt_runner_rhel` role adds a runner container to the showroom pod.
+The runner SSHes to the bastion using `BASTION_HOST`/`ANSIBLE_PASSWORD` env vars,
+then the Ansible playbooks in `runtime-automation/` connect to the node from there.
+
+== Next steps
+
+Replace these simple exercises with real RHEL lab content:
+
+. Update `runtime-automation/module-01/` with your actual validation logic
+. Update `content/` with your lab instructions
+. Add more modules in `ui-config.yml` as your lab grows

@@ -1,0 +1,35 @@
+= Module 2: Check the sshd Service
+:imagesdir: ../assets/images
+
+In this module you will ensure the `sshd` service is running on the node.
+
+== Exercise: Start and enable sshd
+
+. Check the current status:
++
+[source,sh,role=execute]
+----
+ssh {bastion_ssh_user_name}@{node_hostname} "systemctl status sshd --no-pager"
+----
+
+. If not running, start and enable it:
++
+[source,sh,role=execute]
+----
+ssh {bastion_ssh_user_name}@{node_hostname} "sudo systemctl enable --now sshd"
+----
+
+. Verify it is active:
++
+[source,sh,role=execute]
+----
+ssh {bastion_ssh_user_name}@{node_hostname} "systemctl is-active sshd"
+----
+
+.Expected output
+[source,texinfo]
+----
+active
+----
+
+Click *Next* to validate your work.

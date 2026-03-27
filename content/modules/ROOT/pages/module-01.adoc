@@ -1,0 +1,30 @@
+= Module 1: Create a File on the Node
+:imagesdir: ../assets/images
+
+In this module you will create a file on the node VM via the bastion.
+
+== Exercise: Create the file
+
+From the bastion terminal, SSH to the node and create the required file.
+
+. From the Terminal tab, SSH to the node:
++
+[source,sh,role=execute]
+----
+ssh {bastion_ssh_user_name}@{node_hostname} "mkdir -p /tmp/zt-test && touch /tmp/zt-test/done"
+----
+
+. Verify the file exists:
++
+[source,sh,role=execute]
+----
+ssh {bastion_ssh_user_name}@{node_hostname} "ls -la /tmp/zt-test/done"
+----
+
+.Expected output
+[source,texinfo]
+----
+-rw-r--r--. 1 lab-user lab-user 0 Mar 27 10:00 /tmp/zt-test/done
+----
+
+Click *Next* to validate your work.

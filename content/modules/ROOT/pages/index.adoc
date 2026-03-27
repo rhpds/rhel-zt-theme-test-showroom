@@ -1,0 +1,26 @@
+= RHEL ZT Grading Example
+:imagesdir: ../assets/images
+
+Welcome to this Zero Touch (ZT) hands-on lab for Red Hat Enterprise Linux.
+
+This lab provisions two RHEL VMs — a bastion and a node — and tests
+the ZT grading engine with simple RHEL exercises.
+
+== What you will do
+
+* *Module 1* -- Create a file on the node VM from the bastion
+* *Module 2* -- Ensure the `sshd` service is running on the node
+
+== How this lab works
+
+Next / Validate:: Click *Next* at the bottom of each module to run automated checks.
+If something is wrong you will see a description of what to fix.
+
+Solve:: Click *Solve* if you are stuck. The automation completes the steps for you.
+
+== Your environment
+
+* *Bastion*: `{bastion_public_hostname}` — SSH login: `{bastion_ssh_user_name}` / `{bastion_ssh_password}`
+* *Node*: `{node_hostname}` — reachable from bastion via SSH (same password)
+
+Click *Next* to begin Module 1.

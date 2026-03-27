@@ -1,0 +1,24 @@
+---
+- name: Check sshd is active on node
+  ansible.builtin.command:
+    cmd: "ssh -o StrictHostKeyChecking=no {{ node_user }}@{{ node_host }} 'systemctl is-active sshd'"
+  register: r_sshd
+  changed_when: false
+  failed_when: false
+
+- name: Fail — sshd not active
+  when: r_sshd.stdout | trim != 'active'
+  block:
+    - ansible.builtin.copy:
+        dest: "{{ job_info_dir }}/validation_failure.out"
+        content: |
+          sshd is not active on node (status: {{ r_sshd.stdout | default('unknown') }}).
+
+          Start it from the bastion terminal:
+            ssh lab-user@node "sudo systemctl enable --now sshd"
+    - ansible.builtin.fail:
+        msg: "sshd not active"
+
+- name: Validation passed
+  ansible.builtin.debug:
+    msg: "Module 2 validation passed — sshd is active on {{ node_host }}"

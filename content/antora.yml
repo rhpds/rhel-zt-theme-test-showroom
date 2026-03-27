@@ -1,0 +1,19 @@
+name: modules
+title: RHEL ZT Grading Example
+version: master
+nav:
+  - modules/ROOT/nav.adoc
+
+asciidoc:
+  attributes:
+    lab_name: "RHEL ZT Grading Example"
+    release-version: master
+    page-pagination: true
+    bastion_public_hostname: bastion.example.redhatworkshops.io
+    bastion_ssh_user_name: lab-user
+    bastion_ssh_password: changeme123
+    bastion_ssh_port: 22
+    node_hostname: node
+    page-links:
+    - url: https://redhat.com
+      text: Red Hat
