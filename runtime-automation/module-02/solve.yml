@@ -1,9 +1,23 @@
 ---
-- name: Enable and start sshd on node
-  ansible.builtin.command:
-    cmd: "ssh -o StrictHostKeyChecking=no {{ node_user }}@{{ node_host }} 'sudo systemctl enable --now sshd'"
-  changed_when: true
+- name: Module 2 Solve — enable sshd on node
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: Add bastion
+      ansible.builtin.add_host:
+        name: bastion
+        ansible_host: "{{ lookup('env', 'BASTION_HOST') }}"
+        ansible_port: "{{ lookup('env', 'BASTION_PORT') | default('22') }}"
+        ansible_user: "{{ lookup('env', 'ANSIBLE_USER') | default('lab-user') }}"
+        ansible_password: "{{ lookup('env', 'ANSIBLE_PASSWORD') }}"
+        ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
 
-- name: Solve complete
-  ansible.builtin.debug:
-    msg: "Module 2 solved — sshd enabled on {{ node_host }}"
+- name: Enable sshd on node via bastion
+  hosts: bastion
+  gather_facts: false
+  tasks:
+    - name: Enable and start sshd on node
+      ansible.builtin.command:
+        cmd: "ssh -o StrictHostKeyChecking=no lab-user@node 'sudo systemctl enable --now sshd'"
+      changed_when: true

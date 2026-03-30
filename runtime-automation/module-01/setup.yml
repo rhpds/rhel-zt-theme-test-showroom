@@ -1,10 +1,26 @@
 ---
-- name: Ensure /tmp/zt-test directory exists on node
-  ansible.builtin.command:
-    cmd: "ssh -o StrictHostKeyChecking=no {{ node_user }}@{{ node_host }} 'mkdir -p /tmp/zt-test'"
-  changed_when: true
-  ignore_errors: true
+- name: Module 1 Setup — prepare node via bastion
+  hosts: localhost
+  connection: local
+  gather_facts: false
 
-- name: Report setup complete
-  ansible.builtin.debug:
-    msg: "Module 1 setup complete — /tmp/zt-test created on {{ node_host }}"
+  tasks:
+    - name: Add bastion to inventory
+      ansible.builtin.add_host:
+        name: bastion
+        ansible_host: "{{ lookup('env', 'BASTION_HOST') }}"
+        ansible_port: "{{ lookup('env', 'BASTION_PORT') | default('22') }}"
+        ansible_user: "{{ lookup('env', 'ANSIBLE_USER') | default('lab-user') }}"
+        ansible_password: "{{ lookup('env', 'ANSIBLE_PASSWORD') }}"
+        ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
+
+- name: Setup node via bastion
+  hosts: bastion
+  gather_facts: false
+
+  tasks:
+    - name: Create /tmp/zt-test directory on node
+      ansible.builtin.command:
+        cmd: "ssh -o StrictHostKeyChecking=no lab-user@node 'mkdir -p /tmp/zt-test'"
+      changed_when: true
+      ignore_errors: true

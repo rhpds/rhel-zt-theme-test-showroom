@@ -1,24 +1,38 @@
 ---
-- name: Check file exists on node
-  ansible.builtin.command:
-    cmd: "ssh -o StrictHostKeyChecking=no {{ node_user }}@{{ node_host }} 'test -f /tmp/zt-test/done'"
-  register: r_file
-  changed_when: false
-  failed_when: false
+- name: Module 1 Validation — check file on node
+  hosts: localhost
+  connection: local
+  gather_facts: false
 
-- name: Fail — file not found
-  when: r_file.rc != 0
-  block:
-    - ansible.builtin.copy:
-        dest: "{{ job_info_dir }}/validation_failure.out"
-        content: |
+  tasks:
+    - name: Add bastion to inventory
+      ansible.builtin.add_host:
+        name: bastion
+        ansible_host: "{{ lookup('env', 'BASTION_HOST') }}"
+        ansible_port: "{{ lookup('env', 'BASTION_PORT') | default('22') }}"
+        ansible_user: "{{ lookup('env', 'ANSIBLE_USER') | default('lab-user') }}"
+        ansible_password: "{{ lookup('env', 'ANSIBLE_PASSWORD') }}"
+        ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
+
+- name: Validate file exists on node
+  hosts: bastion
+  gather_facts: false
+  vars:
+    job_info_dir: "{{ lookup('env', 'JOB_INFO_DIR') | default('/tmp') }}"
+
+  tasks:
+    - name: Check /tmp/zt-test/done exists on node
+      ansible.builtin.command:
+        cmd: "ssh -o StrictHostKeyChecking=no lab-user@node 'test -f /tmp/zt-test/done'"
+      register: r_file
+      changed_when: false
+      failed_when: false
+
+    - name: Fail if file missing
+      when: r_file.rc != 0
+      lab_check_fail:
+        msg: |
           File /tmp/zt-test/done not found on node.
 
-          Create it from the bastion terminal:
+          Create it from bastion:
             ssh lab-user@node "mkdir -p /tmp/zt-test && touch /tmp/zt-test/done"
-    - ansible.builtin.fail:
-        msg: "File missing on node"
-
-- name: Validation passed
-  ansible.builtin.debug:
-    msg: "Module 1 validation passed — /tmp/zt-test/done exists on {{ node_host }}"

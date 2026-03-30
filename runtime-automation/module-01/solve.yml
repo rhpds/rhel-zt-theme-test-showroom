@@ -1,9 +1,25 @@
 ---
-- name: Create required file on node
-  ansible.builtin.command:
-    cmd: "ssh -o StrictHostKeyChecking=no {{ node_user }}@{{ node_host }} 'mkdir -p /tmp/zt-test && touch /tmp/zt-test/done'"
-  changed_when: true
+- name: Module 1 Solve — create file on node
+  hosts: localhost
+  connection: local
+  gather_facts: false
 
-- name: Solve complete
-  ansible.builtin.debug:
-    msg: "Module 1 solved — /tmp/zt-test/done created on {{ node_host }}"
+  tasks:
+    - name: Add bastion to inventory
+      ansible.builtin.add_host:
+        name: bastion
+        ansible_host: "{{ lookup('env', 'BASTION_HOST') }}"
+        ansible_port: "{{ lookup('env', 'BASTION_PORT') | default('22') }}"
+        ansible_user: "{{ lookup('env', 'ANSIBLE_USER') | default('lab-user') }}"
+        ansible_password: "{{ lookup('env', 'ANSIBLE_PASSWORD') }}"
+        ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
+
+- name: Create file on node via bastion
+  hosts: bastion
+  gather_facts: false
+
+  tasks:
+    - name: Create /tmp/zt-test/done on node
+      ansible.builtin.command:
+        cmd: "ssh -o StrictHostKeyChecking=no lab-user@node 'mkdir -p /tmp/zt-test && touch /tmp/zt-test/done'"
+      changed_when: true

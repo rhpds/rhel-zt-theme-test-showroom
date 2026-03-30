@@ -1,11 +1,27 @@
 ---
-- name: Check sshd status on node
-  ansible.builtin.command:
-    cmd: "ssh -o StrictHostKeyChecking=no {{ node_user }}@{{ node_host }} 'systemctl is-active sshd || true'"
-  register: r_sshd
-  changed_when: false
-  ignore_errors: true
+- name: Module 2 Setup — check sshd on node
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: Add bastion
+      ansible.builtin.add_host:
+        name: bastion
+        ansible_host: "{{ lookup('env', 'BASTION_HOST') }}"
+        ansible_port: "{{ lookup('env', 'BASTION_PORT') | default('22') }}"
+        ansible_user: "{{ lookup('env', 'ANSIBLE_USER') | default('lab-user') }}"
+        ansible_password: "{{ lookup('env', 'ANSIBLE_PASSWORD') }}"
+        ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
 
-- name: Report setup status
-  ansible.builtin.debug:
-    msg: "sshd on {{ node_host }}: {{ r_sshd.stdout | default('unknown') }}"
+- name: Check sshd on node
+  hosts: bastion
+  gather_facts: false
+  tasks:
+    - name: Get sshd status
+      ansible.builtin.command:
+        cmd: "ssh -o StrictHostKeyChecking=no lab-user@node 'systemctl is-active sshd || true'"
+      register: r_sshd
+      changed_when: false
+      ignore_errors: true
+    - ansible.builtin.debug:
+        msg: "sshd: {{ r_sshd.stdout | default('unknown') }}"
