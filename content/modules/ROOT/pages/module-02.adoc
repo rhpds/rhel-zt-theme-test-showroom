@@ -1,29 +1,29 @@
-= Module 2: Check the sshd Service
+= Module 2: Ensure sshd Is Running on the Node
 :imagesdir: ../assets/images
 
-In this module you will ensure the `sshd` service is running on the node.
+In this module you will ensure the `sshd` service is active on the node VM.
 
-== Exercise: Start and enable sshd
+== Exercise: Check and start sshd
 
 . Check the current status:
 +
 [source,sh,role=execute]
 ----
-ssh {bastion_ssh_user_name}@{node_hostname} "systemctl status sshd --no-pager"
+ssh -o StrictHostKeyChecking=no lab-user@node "systemctl status sshd --no-pager"
 ----
 
-. If not running, start and enable it:
+. If not running, enable and start it:
 +
 [source,sh,role=execute]
 ----
-ssh {bastion_ssh_user_name}@{node_hostname} "sudo systemctl enable --now sshd"
+ssh -o StrictHostKeyChecking=no lab-user@node "sudo systemctl enable --now sshd"
 ----
 
-. Verify it is active:
-+
+=== Verify
+
 [source,sh,role=execute]
 ----
-ssh {bastion_ssh_user_name}@{node_hostname} "systemctl is-active sshd"
+ssh -o StrictHostKeyChecking=no lab-user@node "systemctl is-active sshd"
 ----
 
 .Expected output
