@@ -14,18 +14,17 @@
 - name: Validate file on node
   hosts: node
   gather_facts: false
-  vars:
-    job_info_dir: "{{ lookup('env', 'JOB_INFO_DIR') | default('/tmp') }}"
   tasks:
     - name: Check /tmp/zt-test/done exists
       ansible.builtin.stat:
         path: /tmp/zt-test/done
       register: r_file
 
-    - name: Fail if file missing
-      when: not r_file.stat.exists
-      lab_check_fail:
-        msg: |
+    - name: Validate file
+      validation_check:
+        check: "{{ r_file.stat.exists }}"
+        pass_msg: "File /tmp/zt-test/done exists on node"
+        error_msg: |
           File /tmp/zt-test/done not found on node.
 
           From the terminal, run:

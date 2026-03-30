@@ -1,5 +1,5 @@
 ---
-- name: Module 2 Validation — check sshd active on node
+- name: Module 2 Validation — check sshd on node
   hosts: localhost
   connection: local
   gather_facts: false
@@ -15,18 +15,17 @@
   hosts: node
   gather_facts: false
   become: true
-  vars:
-    job_info_dir: "{{ lookup('env', 'JOB_INFO_DIR') | default('/tmp') }}"
   tasks:
-    - name: Check sshd is active
+    - name: Get sshd status
       ansible.builtin.systemd:
         name: sshd
       register: r_sshd
 
-    - name: Fail if sshd not active
-      when: r_sshd.status.ActiveState != 'active'
-      lab_check_fail:
-        msg: |
+    - name: Validate sshd
+      validation_check:
+        check: "{{ r_sshd.status.ActiveState == 'active' }}"
+        pass_msg: "sshd is active on node"
+        error_msg: |
           sshd is not active on node (state: {{ r_sshd.status.ActiveState | default('unknown') }}).
 
           From the terminal, run:
