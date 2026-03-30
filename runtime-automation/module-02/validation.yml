@@ -4,33 +4,30 @@
   connection: local
   gather_facts: false
   tasks:
-    - name: Add bastion
+    - name: Add node to inventory
       ansible.builtin.add_host:
-        name: bastion
-        ansible_host: "{{ lookup('env', 'BASTION_HOST') }}"
-        ansible_port: "{{ lookup('env', 'BASTION_PORT') | default('22') }}"
-        ansible_user: "{{ lookup('env', 'ANSIBLE_USER') | default('lab-user') }}"
-        ansible_password: "{{ lookup('env', 'ANSIBLE_PASSWORD') }}"
-        ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
+        name: node
+        ansible_user: lab-user
+        ansible_ssh_private_key_file: /app/.ssh/id_rsa
+        ansible_ssh_common_args: "-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
 
 - name: Validate sshd on node
-  hosts: bastion
+  hosts: node
   gather_facts: false
+  become: true
   vars:
     job_info_dir: "{{ lookup('env', 'JOB_INFO_DIR') | default('/tmp') }}"
   tasks:
-    - name: Check sshd active
-      ansible.builtin.command:
-        cmd: "ssh -o StrictHostKeyChecking=no lab-user@node 'systemctl is-active sshd'"
+    - name: Check sshd is active
+      ansible.builtin.systemd:
+        name: sshd
       register: r_sshd
-      changed_when: false
-      failed_when: false
 
     - name: Fail if sshd not active
-      when: r_sshd.stdout | trim != 'active'
+      when: r_sshd.status.ActiveState != 'active'
       lab_check_fail:
         msg: |
-          sshd is not active on node (status: {{ r_sshd.stdout | default('unknown') }}).
+          sshd is not active on node (state: {{ r_sshd.status.ActiveState | default('unknown') }}).
 
-          Start it from bastion:
-            ssh lab-user@node "sudo systemctl enable --now sshd"
+          From the terminal, run:
+            ssh node "sudo systemctl enable --now sshd"

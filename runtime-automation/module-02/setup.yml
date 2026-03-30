@@ -4,24 +4,17 @@
   connection: local
   gather_facts: false
   tasks:
-    - name: Add bastion
+    - name: Add node to inventory
       ansible.builtin.add_host:
-        name: bastion
-        ansible_host: "{{ lookup('env', 'BASTION_HOST') }}"
-        ansible_port: "{{ lookup('env', 'BASTION_PORT') | default('22') }}"
-        ansible_user: "{{ lookup('env', 'ANSIBLE_USER') | default('lab-user') }}"
-        ansible_password: "{{ lookup('env', 'ANSIBLE_PASSWORD') }}"
-        ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
+        name: node
+        ansible_user: lab-user
+        ansible_ssh_private_key_file: /app/.ssh/id_rsa
+        ansible_ssh_common_args: "-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
 
-- name: Check sshd on node
-  hosts: bastion
+- name: Check node state
+  hosts: node
   gather_facts: false
   tasks:
     - name: Get sshd status
-      ansible.builtin.command:
-        cmd: "ssh -o StrictHostKeyChecking=no lab-user@node 'systemctl is-active sshd || true'"
-      register: r_sshd
-      changed_when: false
+      ansible.builtin.service_facts:
       ignore_errors: true
-    - ansible.builtin.debug:
-        msg: "sshd: {{ r_sshd.stdout | default('unknown') }}"

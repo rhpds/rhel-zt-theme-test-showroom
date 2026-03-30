@@ -4,20 +4,20 @@
   connection: local
   gather_facts: false
   tasks:
-    - name: Add bastion
+    - name: Add node to inventory
       ansible.builtin.add_host:
-        name: bastion
-        ansible_host: "{{ lookup('env', 'BASTION_HOST') }}"
-        ansible_port: "{{ lookup('env', 'BASTION_PORT') | default('22') }}"
-        ansible_user: "{{ lookup('env', 'ANSIBLE_USER') | default('lab-user') }}"
-        ansible_password: "{{ lookup('env', 'ANSIBLE_PASSWORD') }}"
-        ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
+        name: node
+        ansible_user: lab-user
+        ansible_ssh_private_key_file: /app/.ssh/id_rsa
+        ansible_ssh_common_args: "-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
 
-- name: Enable sshd on node via bastion
-  hosts: bastion
+- name: Enable sshd on node
+  hosts: node
   gather_facts: false
+  become: true
   tasks:
-    - name: Enable and start sshd on node
-      ansible.builtin.command:
-        cmd: "ssh -o StrictHostKeyChecking=no lab-user@node 'sudo systemctl enable --now sshd'"
-      changed_when: true
+    - name: Enable and start sshd
+      ansible.builtin.systemd:
+        name: sshd
+        state: started
+        enabled: true

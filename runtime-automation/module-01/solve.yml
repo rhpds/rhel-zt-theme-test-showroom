@@ -3,23 +3,26 @@
   hosts: localhost
   connection: local
   gather_facts: false
-
   tasks:
-    - name: Add bastion to inventory
+    - name: Add node to inventory
       ansible.builtin.add_host:
-        name: bastion
-        ansible_host: "{{ lookup('env', 'BASTION_HOST') }}"
-        ansible_port: "{{ lookup('env', 'BASTION_PORT') | default('22') }}"
-        ansible_user: "{{ lookup('env', 'ANSIBLE_USER') | default('lab-user') }}"
-        ansible_password: "{{ lookup('env', 'ANSIBLE_PASSWORD') }}"
-        ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
+        name: node
+        ansible_user: lab-user
+        ansible_ssh_private_key_file: /app/.ssh/id_rsa
+        ansible_ssh_common_args: "-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
 
-- name: Create file on node via bastion
-  hosts: bastion
+- name: Create file on node
+  hosts: node
   gather_facts: false
-
   tasks:
-    - name: Create /tmp/zt-test/done on node
-      ansible.builtin.command:
-        cmd: "ssh -o StrictHostKeyChecking=no lab-user@node 'mkdir -p /tmp/zt-test && touch /tmp/zt-test/done'"
-      changed_when: true
+    - name: Create /tmp/zt-test directory
+      ansible.builtin.file:
+        path: /tmp/zt-test
+        state: directory
+        mode: "0755"
+
+    - name: Create /tmp/zt-test/done
+      ansible.builtin.file:
+        path: /tmp/zt-test/done
+        state: touch
+        mode: "0644"
