@@ -4,6 +4,9 @@ type: zero-touch
 # Split view: 35% lab guide left, 65% Terminal right
 default_width: 35
 persist_url_state: true
+view_switcher:
+  enabled: true
+  default_mode: split
 
 antora:
   name: modules
