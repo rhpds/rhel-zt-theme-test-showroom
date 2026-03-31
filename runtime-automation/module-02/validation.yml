@@ -1,5 +1,5 @@
 ---
-- name: Module 2 Validation — check directory on node
+- name: Module 2 Validation — check htop on node
   hosts: localhost
   connection: local
   gather_facts: false
@@ -11,21 +11,22 @@
         ansible_ssh_private_key_file: /app/.ssh/id_rsa
         ansible_ssh_common_args: "-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
 
-- name: Validate directory on node
+- name: Validate htop on node
   hosts: node
   gather_facts: false
   tasks:
-    - name: Check /home/lab-user/myproject exists
-      ansible.builtin.stat:
-        path: /home/lab-user/myproject
-      register: r_dir
+    - name: Check htop is installed
+      ansible.builtin.command: rpm -q htop
+      register: r_htop
+      changed_when: false
+      ignore_errors: true
 
     - name: Validate
       validation_check:
-        check: "{{ r_dir.stat.exists and r_dir.stat.isdir }}"
-        pass_msg: "Directory /home/lab-user/myproject exists on node"
+        check: "{{ r_htop.rc == 0 }}"
+        pass_msg: "Package htop is installed on node"
         error_msg: |
-          Directory /home/lab-user/myproject not found on node.
+          Package htop is not installed on node.
 
           Run:
-            ssh node "mkdir -p /home/lab-user/myproject"
+            ssh node "sudo dnf install -y htop"

@@ -1,21 +1,31 @@
 ---
-- name: Module 1 Validation — check htop is installed on bastion
+- name: Module 1 Validation — check directory on node
   hosts: localhost
   connection: local
   gather_facts: false
   tasks:
-    - name: Check htop is installed
-      ansible.builtin.command: rpm -q htop
-      register: r_htop
-      changed_when: false
-      ignore_errors: true
+    - name: Add node to inventory
+      ansible.builtin.add_host:
+        name: node
+        ansible_user: "{{ bastion_user | default('lab-user') }}"
+        ansible_ssh_private_key_file: /app/.ssh/id_rsa
+        ansible_ssh_common_args: "-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
+
+- name: Validate directory on node
+  hosts: node
+  gather_facts: false
+  tasks:
+    - name: Check /home/lab-user/myproject exists
+      ansible.builtin.stat:
+        path: /home/lab-user/myproject
+      register: r_dir
 
     - name: Validate
       validation_check:
-        check: "{{ r_htop.rc == 0 }}"
-        pass_msg: "Package 'htop' is installed on the bastion"
+        check: "{{ r_dir.stat.exists and r_dir.stat.isdir }}"
+        pass_msg: "Directory /home/lab-user/myproject exists on node"
         error_msg: |
-          Package 'htop' is not installed on the bastion.
+          Directory /home/lab-user/myproject not found on node.
 
           Run:
-            sudo dnf install -y htop
+            ssh node "mkdir -p /home/lab-user/myproject"

@@ -1,5 +1,5 @@
 ---
-- name: Module 2 Solve — create directory on node
+- name: Module 2 Solve — install htop on node
   hosts: localhost
   connection: local
   gather_facts: false
@@ -11,12 +11,12 @@
         ansible_ssh_private_key_file: /app/.ssh/id_rsa
         ansible_ssh_common_args: "-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
 
-- name: Create /home/lab-user/myproject on node
+- name: Install htop on node
   hosts: node
   gather_facts: false
+  become: true
   tasks:
-    - name: Create myproject directory
-      ansible.builtin.file:
-        path: /home/lab-user/myproject
-        state: directory
-        mode: "0755"
+    - name: Install htop package
+      ansible.builtin.package:
+        name: htop
+        state: present

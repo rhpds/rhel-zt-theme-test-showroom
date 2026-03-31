@@ -1,27 +1,27 @@
-= Module 2: Create a Directory on the Node VM
+= Module 2: Install a Package on the Node
 
-In this module you will create a project directory on the node VM from the bastion.
+In this module you will install the `htop` package on the node VM.
 
-== Exercise: Create the directory
+== Exercise
 
-. From the *Terminal* tab, SSH to the node and create the directory:
-+
+From the *Terminal* tab, install htop on the node:
+
 [source,sh,role=execute]
 ----
-ssh node "mkdir -p /home/lab-user/myproject"
+ssh node "sudo dnf install -y htop"
 ----
 
 === Verify
 
 [source,sh,role=execute]
 ----
-ssh node "ls -la /home/lab-user/ | grep myproject"
+ssh node "rpm -q htop"
 ----
 
 .Expected output
 [source,texinfo]
 ----
-drwxr-xr-x. 2 lab-user lab-user 6 ... myproject
+htop-3.x.x-x.el9.x86_64
 ----
 
 Click *Next* to validate your work.
