@@ -1,26 +1,33 @@
-= Module 1: Set Up Project Directory on Node
+= Module 1: Set Up Lab Environment
 
-In this module you will create a project directory and a README file on the node VM.
+In this module you will perform tasks on both the node VM and the bastion host.
 
-== Task 1: Create the project directory
+== Task 1: Create the project directory on node
 
 [source,sh,role=execute]
 ----
 ssh node "mkdir -p /home/lab-user/myproject"
 ----
 
-== Task 2: Create a README file
+== Task 2: Create a README file on node
 
 [source,sh,role=execute]
 ----
 ssh node "echo '# My Project' > /home/lab-user/myproject/README.md"
 ----
 
+== Task 3: Create a notes file on the bastion
+
+[source,sh,role=execute]
+----
+touch /home/lab-user/lab-notes.txt
+----
+
 === Verify
 
 [source,sh,role=execute]
 ----
-ssh node "ls -la /home/lab-user/myproject/"
+ssh node "ls /home/lab-user/myproject/" && ls /home/lab-user/lab-notes.txt
 ----
 
-Click *Next* to validate your work. Both tasks must be complete.
+Click *Next* to validate your work. All three tasks must be complete.

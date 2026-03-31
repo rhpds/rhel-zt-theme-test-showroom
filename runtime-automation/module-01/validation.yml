@@ -1,5 +1,5 @@
 ---
-- name: Module 1 Validation — check directory and README on node
+- name: Module 1 Validation — tasks on node and bastion
   hosts: localhost
   connection: local
   gather_facts: false
@@ -11,16 +11,21 @@
         ansible_ssh_private_key_file: /app/.ssh/id_rsa
         ansible_ssh_common_args: "-F /app/.ssh/config"
 
-- name: Validate tasks on node
+    - name: Task 3 — check lab-notes.txt on bastion
+      ansible.builtin.stat:
+        path: /home/lab-user/lab-notes.txt
+      register: r_notes
+
+- name: Check tasks on node
   hosts: node
   gather_facts: false
   tasks:
-    - name: Check Task 1 — myproject directory exists
+    - name: Task 1 — check myproject directory exists
       ansible.builtin.stat:
         path: /home/lab-user/myproject
       register: r_dir
 
-    - name: Check Task 2 — README.md exists
+    - name: Task 2 — check README.md exists
       ansible.builtin.stat:
         path: /home/lab-user/myproject/README.md
       register: r_readme
@@ -29,18 +34,22 @@
       ansible.builtin.set_fact:
         _task1_ok: "{{ r_dir.stat.exists and r_dir.stat.isdir }}"
         _task2_ok: "{{ r_readme.stat.exists }}"
+        _task3_ok: "{{ hostvars['localhost']['r_notes'].stat.exists }}"
 
     - name: Validate all tasks
       validation_check:
-        check: "{{ _task1_ok and _task2_ok }}"
+        check: "{{ _task1_ok and _task2_ok and _task3_ok }}"
         pass_msg: |
           ✅ Task 1: Directory /home/lab-user/myproject exists on node
-          ✅ Task 2: README.md exists in myproject
+          ✅ Task 2: README.md exists in myproject on node
+          ✅ Task 3: File lab-notes.txt exists on bastion
         error_msg: |
           {{ '✅' if _task1_ok else '❌' }} Task 1: Directory /home/lab-user/myproject exists on node
-          {{ '✅' if _task2_ok else '❌' }} Task 2: README.md exists in myproject
+          {{ '✅' if _task2_ok else '❌' }} Task 2: README.md exists in myproject on node
+          {{ '✅' if _task3_ok else '❌' }} Task 3: File lab-notes.txt exists on bastion
 
-          Missing tasks:
+          Fix missing tasks:
           {% if not _task1_ok %}  ssh node "mkdir -p /home/lab-user/myproject"
           {% endif %}{% if not _task2_ok %}  ssh node "echo '# My Project' > /home/lab-user/myproject/README.md"
+          {% endif %}{% if not _task3_ok %}  touch /home/lab-user/lab-notes.txt
           {% endif %}
