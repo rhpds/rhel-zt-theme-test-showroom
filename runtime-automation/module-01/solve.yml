@@ -7,7 +7,14 @@
     - name: Add node to inventory
       ansible.builtin.add_host:
         name: node
-        ansible_user: "{{ bastion_user | default('lab-user') }}"
+        ansible_user: lab-user
+        ansible_ssh_private_key_file: /app/.ssh/id_rsa
+        ansible_ssh_common_args: "-F /app/.ssh/config"
+
+    - name: Add bastion to inventory
+      ansible.builtin.add_host:
+        name: bastion
+        ansible_user: lab-user
         ansible_ssh_private_key_file: /app/.ssh/id_rsa
         ansible_ssh_common_args: "-F /app/.ssh/config"
 
@@ -28,12 +35,11 @@
         mode: "0644"
 
 - name: Task 3 — create lab-notes.txt on bastion
-  hosts: localhost
-  connection: local
+  hosts: bastion
   gather_facts: false
   tasks:
     - name: Task 3 — create /home/lab-user/lab-notes.txt
-      ansible.builtin.copy:
-        content: "Lab notes\n"
-        dest: /home/lab-user/lab-notes.txt
+      ansible.builtin.file:
+        path: /home/lab-user/lab-notes.txt
+        state: touch
         mode: "0644"
