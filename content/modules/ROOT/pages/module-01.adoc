@@ -1,31 +1,27 @@
-= Module 1: Create a File on the Node VM
-:imagesdir: ../assets/images
+= Module 1: Install a Package on the Bastion
 
-In this module you will create a file on the node VM from the bastion.
+In this module you will install the `htop` package on the bastion host.
 
-== Exercise: Create the file
+== Exercise: Install htop
 
-. From the *Terminal* tab, SSH to the bastion (it may already be connected).
-
-. Create the required file on the node:
+. From the *Terminal* tab, run:
 +
 [source,sh,role=execute]
 ----
-ssh -o StrictHostKeyChecking=no lab-user@node \
-  "mkdir -p /tmp/zt-test && touch /tmp/zt-test/done"
+sudo dnf install -y htop
 ----
 
 === Verify
 
 [source,sh,role=execute]
 ----
-ssh -o StrictHostKeyChecking=no lab-user@node "ls -la /tmp/zt-test/done"
+rpm -q htop
 ----
 
 .Expected output
 [source,texinfo]
 ----
--rw-r--r--. 1 lab-user lab-user 0 Mar 30 10:00 /tmp/zt-test/done
+htop-3.x.x-x.el9.x86_64
 ----
 
 Click *Next* to validate your work.

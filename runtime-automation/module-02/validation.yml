@@ -1,5 +1,5 @@
 ---
-- name: Module 2 Validation — check sshd on node
+- name: Module 2 Validation — check directory on node
   hosts: localhost
   connection: local
   gather_facts: false
@@ -11,22 +11,21 @@
         ansible_ssh_private_key_file: /app/.ssh/id_rsa
         ansible_ssh_common_args: "-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
 
-- name: Validate sshd on node
+- name: Validate directory on node
   hosts: node
   gather_facts: false
-  become: true
   tasks:
-    - name: Get sshd status
-      ansible.builtin.systemd:
-        name: sshd
-      register: r_sshd
+    - name: Check /home/lab-user/myproject exists
+      ansible.builtin.stat:
+        path: /home/lab-user/myproject
+      register: r_dir
 
-    - name: Validate sshd
+    - name: Validate
       validation_check:
-        check: "{{ r_sshd.status.ActiveState == 'active' }}"
-        pass_msg: "sshd is active on node"
+        check: "{{ r_dir.stat.exists and r_dir.stat.isdir }}"
+        pass_msg: "Directory /home/lab-user/myproject exists on node"
         error_msg: |
-          sshd is not active on node (state: {{ r_sshd.status.ActiveState | default('unknown') }}).
+          Directory /home/lab-user/myproject not found on node.
 
-          From the terminal, run:
-            ssh node "sudo systemctl enable --now sshd"
+          Run:
+            ssh node "mkdir -p /home/lab-user/myproject"

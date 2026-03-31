@@ -1,35 +1,27 @@
-= Module 2: Ensure sshd Is Running on the Node
-:imagesdir: ../assets/images
+= Module 2: Create a Directory on the Node VM
 
-In this module you will ensure the `sshd` service is active on the node VM.
+In this module you will create a project directory on the node VM from the bastion.
 
-== Exercise: Check and start sshd
+== Exercise: Create the directory
 
-. Check the current status:
+. From the *Terminal* tab, SSH to the node and create the directory:
 +
 [source,sh,role=execute]
 ----
-ssh -o StrictHostKeyChecking=no lab-user@node "systemctl status sshd --no-pager"
-----
-
-. If not running, enable and start it:
-+
-[source,sh,role=execute]
-----
-ssh -o StrictHostKeyChecking=no lab-user@node "sudo systemctl enable --now sshd"
+ssh node "mkdir -p /home/lab-user/myproject"
 ----
 
 === Verify
 
 [source,sh,role=execute]
 ----
-ssh -o StrictHostKeyChecking=no lab-user@node "systemctl is-active sshd"
+ssh node "ls -la /home/lab-user/ | grep myproject"
 ----
 
 .Expected output
 [source,texinfo]
 ----
-active
+drwxr-xr-x. 2 lab-user lab-user 6 ... myproject
 ----
 
 Click *Next* to validate your work.
