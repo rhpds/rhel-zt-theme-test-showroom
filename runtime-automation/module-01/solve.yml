@@ -1,5 +1,5 @@
 ---
-- name: Module 1 Solve — create directory on node
+- name: Module 1 Solve — create directory and README on node
   hosts: localhost
   connection: local
   gather_facts: false
@@ -11,12 +11,18 @@
         ansible_ssh_private_key_file: /app/.ssh/id_rsa
         ansible_ssh_common_args: "-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
 
-- name: Create /home/lab-user/myproject on node
+- name: Create project directory and README on node
   hosts: node
   gather_facts: false
   tasks:
-    - name: Create myproject directory
+    - name: Task 1 — create /home/lab-user/myproject directory
       ansible.builtin.file:
         path: /home/lab-user/myproject
         state: directory
         mode: "0755"
+
+    - name: Task 2 — create README.md in myproject
+      ansible.builtin.copy:
+        content: "# My Project\nCreated by ZT lab.\n"
+        dest: /home/lab-user/myproject/README.md
+        mode: "0644"

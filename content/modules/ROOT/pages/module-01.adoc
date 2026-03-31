@@ -1,27 +1,26 @@
-= Module 1: Create a Directory on the Node
+= Module 1: Set Up Project Directory on Node
 
-In this module you will create a project directory on the node VM.
+In this module you will create a project directory and a README file on the node VM.
 
-== Exercise
-
-From the *Terminal* tab, SSH to the node and create the directory:
+== Task 1: Create the project directory
 
 [source,sh,role=execute]
 ----
 ssh node "mkdir -p /home/lab-user/myproject"
 ----
 
+== Task 2: Create a README file
+
+[source,sh,role=execute]
+----
+ssh node "echo '# My Project' > /home/lab-user/myproject/README.md"
+----
+
 === Verify
 
 [source,sh,role=execute]
 ----
-ssh node "ls -la /home/lab-user/ | grep myproject"
+ssh node "ls -la /home/lab-user/myproject/"
 ----
 
-.Expected output
-[source,texinfo]
-----
-drwxr-xr-x. 2 lab-user lab-user 6 ... myproject
-----
-
-Click *Next* to validate your work.
+Click *Next* to validate your work. Both tasks must be complete.
