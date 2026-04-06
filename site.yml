@@ -1,7 +1,7 @@
 ---
 site:
-  title: RHEL ZT Grading Example
-  url: https://github.com/rhpds/rhel-zt-theme-test-showroom
+  title: RHEL VM + Bastion — Solve/Validate Reference
+  url: https://rhpds.github.io/rhel-zt-theme-test-showroom
   start_page: modules::index.adoc
 
 content:
@@ -11,7 +11,7 @@ content:
 
 ui:
   bundle:
-    url: https://github.com/rhpds/nookbag-bundle/releases/download/v0.0.3/ui-bundle.zip
+    url: https://github.com/rhpds/rhdp_showroom_theme/releases/download/rh-one-2025/ui-bundle.zip
     snapshot: true
   supplemental_files:
     - path: ./content/supplemental-ui
@@ -26,7 +26,7 @@ runtime:
 antora:
   extensions:
     - require: ./content/lib/dev-mode.js
-      enabled: true
+      enabled: false
 
 output:
   dir: ./www
