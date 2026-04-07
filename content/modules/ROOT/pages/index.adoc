@@ -1,11 +1,8 @@
-= Zero Touch RHEL Lab
-:imagesdir: ../assets/images
+= RHEL VM + Bastion — E2E Test Reference
 
-Welcome to this Zero Touch (ZT) hands-on lab for Red Hat Enterprise Linux.
+Welcome to this hands-on RHEL lab with automated grading. Each module has *Solve* and *Validate* buttons to auto-complete tasks and check your work.
 
-This lab uses automated grading -- each module has *Validate* and *Solve* buttons so you can check your work or skip ahead.
-
-== Your environment
+== Your Environment
 
 [cols="1,2",options="header"]
 |===
@@ -13,20 +10,107 @@ This lab uses automated grading -- each module has *Validate* and *Solve* button
 | *Bastion* | `{bastion_public_hostname}`
 | *SSH user* | `{bastion_ssh_user_name}`
 | *Password* | `{bastion_ssh_password}`
-| *Node* | `node` (accessible from bastion)
+| *Node* | `node` (accessible from bastion via SSH)
 |===
 
-Use the *Terminal* tab on the right to connect to the bastion.
+Use the *Terminal (Bastion)* tab on the right to connect to the bastion host.
+From the bastion you can reach the worker node with `ssh node`.
 
-== What you will do
+== How This Lab Works
 
-* *Module 1* -- Create a file on the node VM via SSH from bastion
-* *Module 2* -- Ensure the `sshd` service is running on the node VM
+Each module has two buttons at the bottom of the page:
 
-== How this lab works
+🚀 *Solve Module*::
+Automatically completes all tasks in the module for you.
+Use this if you are stuck or want to skip ahead.
+Output streams live so you can see what's happening.
 
-Next / Validate:: Click *Next* at the bottom of each module to run automated checks against the VMs.
+✓ *Validate Module*::
+Runs automated checks against the VMs to verify you completed the tasks correctly.
+Shows ✅ for each passing check and ❌ with a fix hint for failing ones.
 
-Solve:: Click *Solve* if you are stuck. The automation completes the steps for you.
+=== Step-by-step
+
+. Follow the instructions in the module
+. Use *Terminal (Bastion)* to run commands
+. Use `ssh node` from bastion to reach the worker
+. Click *✓ Validate Module* to check your work
+. If it fails, fix the issue and validate again
+. If stuck, click *🚀 Solve Module* — then validate to confirm it passed
+
+== Writing Playbooks (Lab Author Guide)
+
+=== Available Extravars
+
+[cols="1,2,1",options="header"]
+|===
+| Variable | Description | Example
+| `bastion_host` | Bastion hostname (from SSH config) | `bastion` (via /app/.ssh/config)
+| `bastion_user` | SSH username | `lab-user`
+| `bastion_password` | SSH password | `abc123`
+| `guid` | Lab GUID | `abc123`
+|===
+
+NOTE: The runner has SSH key-based access to nodes configured at provision time via `vm_workload_runtime_automation`. Use `ansible_ssh_private_key_file: /app/.ssh/id_rsa` and `-F /app/.ssh/config`.
+
+=== validate.yml Template
+
+[source,yaml]
+----
+---
+- name: Module Validation — add nodes to inventory
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: Add node to inventory
+      ansible.builtin.add_host:
+        name: node
+        ansible_user: lab-user
+        ansible_ssh_private_key_file: /app/.ssh/id_rsa
+        ansible_ssh_common_args: "-F /app/.ssh/config"
+
+    - name: Add bastion to inventory
+      ansible.builtin.add_host:
+        name: bastion
+        ansible_user: lab-user
+        ansible_ssh_private_key_file: /app/.ssh/id_rsa
+        ansible_ssh_common_args: "-F /app/.ssh/config"
+
+- name: Check on node
+  hosts: node
+  gather_facts: false
+  tasks:
+    - name: Check file exists
+      ansible.builtin.stat:
+        path: /home/lab-user/myproject/README.md
+      register: r_file
+
+- name: Validate on bastion
+  hosts: bastion
+  gather_facts: false
+  tasks:
+    - name: Validate
+      validation_check:
+        check: "{{ hostvars['node']['r_file'].stat.exists }}"
+        pass_msg: "✅ README.md exists on node"
+        error_msg: |
+          ❌ README.md not found on node
+
+          Fix:
+            ssh node "echo '# My Project' > /home/lab-user/myproject/README.md"
+----
+
+=== Rules
+
+* Always use `validation_check` — never `ansible.builtin.fail`
+* Use `/app/.ssh/id_rsa` and `-F /app/.ssh/config` for node SSH access
+* Set facts on node hosts and read via `hostvars` from bastion for validation_check
+* The `job_info_dir` variable is injected automatically — do not define it
+
+== What You Will Do
+
+* *Module 1* — Create files on the node VM and bastion
+* *Module 2* — Install `nc` package on the node VM
 
 Click *Next* to begin Module 1.
