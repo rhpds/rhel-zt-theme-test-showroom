@@ -3,9 +3,6 @@ type: showroom
 
 default_width: 35
 persist_url_state: true
-view_switcher:
-  enabled: true
-  default_mode: split
 
 antora:
   name: modules
@@ -14,9 +11,9 @@ antora:
     - name: index
       label: "Welcome & SSH Config"
     - name: module-01
-      label: "Module 1: Bastion + Node Tasks"
+      label: "Module 1: Create a File on Node"
     - name: module-02
-      label: "Module 2: Install Package on Node"
+      label: "Module 2: Install nc on Node"
     - name: conclusion
       label: "Developer Guide"
 
