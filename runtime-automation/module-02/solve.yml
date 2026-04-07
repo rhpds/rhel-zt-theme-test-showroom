@@ -1,5 +1,5 @@
 ---
-- name: Module 2 Solve — install htop on node
+- name: Module 2 Solve — install nc on node
   hosts: localhost
   connection: local
   gather_facts: false
@@ -11,12 +11,12 @@
         ansible_ssh_private_key_file: /app/.ssh/id_rsa
         ansible_ssh_common_args: "-F /app/.ssh/config"
 
-- name: Install htop on node
+- name: Install nc on node
   hosts: node
   gather_facts: false
   become: true
   tasks:
-    - name: Install htop package
+    - name: Install nc package
       ansible.builtin.package:
-        name: htop
+        name: nc
         state: present

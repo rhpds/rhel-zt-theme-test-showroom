@@ -1,27 +1,27 @@
 = Module 2: Install a Package on the Node
 
-In this module you will install the `htop` package on the node VM.
+In this module you will install the `nc` package on the node VM.
 
 == Exercise
 
-From the *Terminal* tab, install htop on the node:
+From the *Terminal* tab, install nc on the node:
 
 [source,sh,role=execute]
 ----
-ssh node "sudo dnf install -y htop"
+ssh node "sudo dnf install -y nc"
 ----
 
 === Verify
 
 [source,sh,role=execute]
 ----
-ssh node "rpm -q htop"
+ssh node "rpm -q nc"
 ----
 
 .Expected output
 [source,texinfo]
 ----
-htop-3.x.x-x.el9.x86_64
+nc-3.x.x-x.el9.x86_64
 ----
 
 Click *Next* to validate your work.
