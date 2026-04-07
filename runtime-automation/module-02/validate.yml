@@ -1,0 +1,32 @@
+---
+- name: Module 2 Validation — check htop on node
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: Add node to inventory
+      ansible.builtin.add_host:
+        name: node
+        ansible_user: "{{ bastion_user | default('lab-user') }}"
+        ansible_ssh_private_key_file: /app/.ssh/id_rsa
+        ansible_ssh_common_args: "-F /app/.ssh/config"
+
+- name: Validate htop on node
+  hosts: node
+  gather_facts: false
+  tasks:
+    - name: Check htop is installed
+      ansible.builtin.command: rpm -q htop
+      register: r_htop
+      changed_when: false
+      ignore_errors: true
+
+    - name: Validate
+      validation_check:
+        check: "{{ r_htop.rc == 0 }}"
+        pass_msg: "Package htop is installed on node"
+        error_msg: |
+          Package htop is not installed on node.
+
+          Run:
+            ssh node "sudo dnf install -y htop"
