@@ -2,18 +2,20 @@
 
 In this module you will perform tasks on both the node VM and the bastion host.
 
+Use the *Terminal (Node)* tab for node tasks and *Terminal (Bastion)* for bastion tasks.
+
 == Task 1: Create the project directory on node
 
-[source,sh,role="send-to-wetty"]
+[source,sh,role="send-to-terminal2"]
 ----
-ssh node "mkdir -p /home/lab-user/myproject"
+mkdir -p /home/lab-user/myproject
 ----
 
 == Task 2: Create a README file on node
 
-[source,sh,role="send-to-wetty"]
+[source,sh,role="send-to-terminal2"]
 ----
-ssh node "echo '# My Project' > /home/lab-user/myproject/README.md"
+echo '# My Project' > /home/lab-user/myproject/README.md
 ----
 
 == Task 3: Create a notes file on the bastion
@@ -25,9 +27,14 @@ touch /home/lab-user/lab-notes.txt
 
 === Verify
 
+[source,sh,role="send-to-terminal2"]
+----
+ls /home/lab-user/myproject/
+----
+
 [source,sh,role="send-to-wetty"]
 ----
-ssh node "ls /home/lab-user/myproject/" && ls /home/lab-user/lab-notes.txt
+ls /home/lab-user/lab-notes.txt
 ----
 
 Click *Next* to validate your work. All three tasks must be complete.
