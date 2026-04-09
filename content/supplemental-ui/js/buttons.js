@@ -2,48 +2,63 @@
   'use strict';
 
   // ── Send-to Terminal ──────────────────────────────────────────────────────
+  // Role name maps directly to URL path in the terminal iframe src.
+  // Alerts if the matching iframe is not found.
+  //
+  //   role="send-to-wetty"  → looks for iframe with /wetty in src
+  //   role="send-to-tty1"   → looks for iframe with /tty1 in src
+  //   role="send-to-tty2"   → looks for iframe with /tty2 in src
+  //
+  // The path after "send-to-" must match the terminal URL in ui-config.yml.
+  // Combine with execute for the theme copy button alongside ▶:
+  //   role="execute send-to-wetty"
 
   function initSendTo() {
-    document.querySelectorAll('pre.send-to, .send-to').forEach(function (block) {
+    // Find all elements whose class list contains a class starting with 'send-to-'
+    document.querySelectorAll('[class*="send-to-"]').forEach(function (block) {
       if (block.dataset.sendToButtonAdded) return;
       var listingBlock = block.closest('.listingblock');
       if (!listingBlock) return;
+
+      // Extract the target path from the class name e.g. 'send-to-wetty' → '/wetty'
+      var targetClass = Array.from(block.classList).find(function (c) { return /^send-to-.+/.test(c); });
+      if (!targetClass) return;
+      var targetPath = '/' + targetClass.replace('send-to-', '');
+
       var btn = document.createElement('button');
       btn.className = 'send-to-command-btn';
+      btn.title = 'Send to ' + targetPath;
       btn.innerHTML = '▶';
       btn.onclick = function () {
         var cmd = (block.querySelector('code') || block).textContent.trim();
-        sendToTerminal(cmd, btn);
+        sendToTerminal(cmd, btn, targetPath);
       };
       listingBlock.appendChild(btn);
       block.dataset.sendToButtonAdded = 'true';
     });
   }
 
-  function sendToTerminal(command, button) {
-    var wettyFrame = null;
+  function findFrame(targetPath) {
     try {
-      if (window.parent && window.parent !== window) {
-        var frames = window.parent.document.querySelectorAll('iframe');
-        for (var i = 0; i < frames.length; i++) {
-          var src = frames[i].src || '';
-          if (src.indexOf('/wetty') !== -1 || src.indexOf('/tty') !== -1 || src.indexOf('/terminal') !== -1) {
-            wettyFrame = frames[i]; break;
-          }
-        }
+      if (!window.parent || window.parent === window) return null;
+      var frames = window.parent.document.querySelectorAll('iframe');
+      for (var i = 0; i < frames.length; i++) {
+        if ((frames[i].src || '').indexOf(targetPath) !== -1) return frames[i];
       }
-    } catch (e) { console.log('[Send-To] Cannot access parent:', e.message); }
+    } catch (e) {}
+    return null;
+  }
+
+  function sendToTerminal(command, button, targetPath) {
+    var frame = findFrame(targetPath);
     var original = button.innerHTML;
-    if (wettyFrame) {
-      wettyFrame.contentWindow.postMessage({ type: 'execute', data: command + '\r' }, '*');
-      button.classList.add('success'); button.innerHTML = '✓ Sent!';
-      setTimeout(function () { button.classList.remove('success'); button.innerHTML = original; }, 2000);
-    } else {
-      navigator.clipboard.writeText(command).then(function () {
-        button.classList.add('copied'); button.innerHTML = '📋 Copied!';
-        setTimeout(function () { button.classList.remove('copied'); button.innerHTML = original; }, 2000);
-      }).catch(function () { button.innerHTML = '✗ Failed'; });
+    if (!frame) {
+      alert('Cannot find terminal at ' + targetPath + ' in this showroom.\nCheck ui-config.yml has a tab with ' + targetPath + ' URL.');
+      return;
     }
+    frame.contentWindow.postMessage({ type: 'execute', data: command + '\r' }, '*');
+    button.classList.add('success'); button.innerHTML = '✓ Sent!';
+    setTimeout(function () { button.classList.remove('success'); button.innerHTML = original; }, 2000);
   }
 
   // ── Solve / Validate buttons ──────────────────────────────────────────────
