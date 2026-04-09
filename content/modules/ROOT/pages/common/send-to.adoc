@@ -1,0 +1,7 @@
+// Send-to Terminal Button — automatically added to code blocks with role="send-to"
+// Requires: buttons.js loaded via head-meta.hbs (no include needed)
+// Usage:
+//   [source,bash,role="send-to"]
+//   ----
+//   your command here
+//   ----

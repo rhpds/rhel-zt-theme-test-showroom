@@ -27,7 +27,7 @@
         var frames = window.parent.document.querySelectorAll('iframe');
         for (var i = 0; i < frames.length; i++) {
           var src = frames[i].src || '';
-          if (src.indexOf('/wetty') !== -1 || src.indexOf('/tty') !== -1) {
+          if (src.indexOf('/wetty') !== -1 || src.indexOf('/tty') !== -1 || src.indexOf('/terminal') !== -1) {
             wettyFrame = frames[i]; break;
           }
         }
