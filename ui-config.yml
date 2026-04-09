@@ -13,5 +13,5 @@ tabs:
     url: /wetty
     type: terminal
   - name: Terminal (Node)
-    url: /wetty_node
+    url: /terminal2
     type: terminal
