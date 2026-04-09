@@ -6,14 +6,14 @@ In this module you will install the `nc` package on the node VM.
 
 From the *Terminal* tab, install nc on the node:
 
-[source,sh,role=execute]
+[source,sh,role="execute send-to"]
 ----
 ssh node "sudo dnf install -y nc"
 ----
 
 === Verify
 
-[source,sh,role=execute]
+[source,sh,role="execute send-to"]
 ----
 ssh node "rpm -q nc"
 ----
