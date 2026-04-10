@@ -207,9 +207,12 @@
       logEl.textContent += line;
       logEl.scrollTop = logEl.scrollHeight;
 
-      // ── Update steps live — same TASK parsing for both solve and validate ──
+      // ── Update steps live ──
+      // Parse TASK names → step chips
       parseSolveLine(line, stepList, { currentTask: currentTask, pendingLi: pendingLi },
         function (state) { currentTask = state.currentTask; pendingLi = state.pendingLi; });
+      // Parse validation_check msg field → ✅/❌ step chips
+      parseValidationMsg(line, stepList);
     };
 
     es.onerror = function () {
@@ -281,6 +284,34 @@
       li2.textContent = t;
       stepList.appendChild(li2);
     }
+  }
+
+  // ── validation_check msg parser ───────────────────────────────────────────
+  // validation_check writes pass/error msg to output.txt AND returns it in
+  // result['msg'] which appears in Ansible stdout as:
+  //   "msg": "✅ Task 1: ...\n✅ Task 2: ...\n : Message written to log"
+  // Extract each ✅/❌ line and show as a step chip.
+
+  function parseValidationMsg(line, stepList) {
+    var clean = stripAnsi(line);
+    // Look for the "msg": "..." pattern from validation_check
+    var msgMatch = clean.match(/"msg":\s*"([\s\S]+?)"\s*}/);
+    if (!msgMatch) return;
+    var msg = msgMatch[1].replace(/\\n/g, '\n').replace(/\\"/g, '"');
+    msg.split('\n').forEach(function (part) {
+      var t = part.trim();
+      if (/^✅/.test(t)) {
+        var li = document.createElement('li');
+        li.className = 'sp-step sp-step-ok';
+        li.textContent = t;
+        stepList.appendChild(li);
+      } else if (/^❌/.test(t)) {
+        var li2 = document.createElement('li');
+        li2.className = 'sp-step sp-step-fail';
+        li2.textContent = t;
+        stepList.appendChild(li2);
+      }
+    });
   }
 
   // ── Finalize status banner ────────────────────────────────────────────────
