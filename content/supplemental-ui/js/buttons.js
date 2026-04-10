@@ -295,7 +295,8 @@
   function parseValidationMsg(line, stepList) {
     var clean = stripAnsi(line);
     // Look for the "msg": "..." pattern from validation_check
-    var msgMatch = clean.match(/"msg":\s*"([\s\S]+?)"\s*}/);
+    // "msg": "..." — no closing } on this line, match to end of string
+    var msgMatch = clean.match(/"msg":\s*"(.+)"$/);
     if (!msgMatch) return;
     var msg = msgMatch[1].replace(/\\n/g, '\n').replace(/\\"/g, '"');
     msg.split('\n').forEach(function (part) {
