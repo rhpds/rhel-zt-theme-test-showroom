@@ -293,7 +293,7 @@
   // Extract each ✅/❌ line and show as a step chip.
 
   function parseValidationMsg(line, stepList) {
-    var clean = stripAnsi(line);
+    var clean = stripAnsi(line).trim();
     // Look for the "msg": "..." pattern from validation_check
     // "msg": "..." — no closing } on this line, match to end of string
     var msgMatch = clean.match(/"msg":\s*"(.+)"$/);
