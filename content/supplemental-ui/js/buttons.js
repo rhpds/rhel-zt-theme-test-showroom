@@ -5,9 +5,8 @@
   // Role name maps directly to URL path in the terminal iframe src.
   // Alerts if the matching iframe is not found.
   //
-  //   role="send-to-wetty"  → looks for iframe with /wetty in src
-  //   role="send-to-tty1"   → looks for iframe with /tty1 in src
-  //   role="send-to-tty2"   → looks for iframe with /tty2 in src
+  //   role="send-to-wetty"    → looks for iframe with /wetty in src (bastion)
+  //   role="send-to-terminal" → looks for iframe with /terminal in src (node)
   //
   // The path after "send-to-" must match the terminal URL in ui-config.yml.
   // Combine with execute for the theme copy button alongside ▶:
