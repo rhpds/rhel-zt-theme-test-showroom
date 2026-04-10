@@ -56,9 +56,9 @@
       return;
     }
 
-    // Inject execute-listener into ttyd terminal if not already done
-    // Only inject for /terminal or /tty paths, not for /wetty (which has native support)
-    if (targetPath.match(/^\/(terminal|tty)/)) {
+    // Inject execute-listener into terminal if not already done
+    // Only inject for /terminal, not for /wetty (which has native support)
+    if (targetPath === '/terminal') {
       ensureTerminalListener(frame);
     }
 
@@ -83,7 +83,7 @@
       if (term) {
         command = command.replace(/[\\r\\n]+$/, "");
 
-        // Method 1: Try ttyd client object (most reliable)
+        // Method 1: Try terminal client object (most reliable)
         if (window.client && typeof window.client.sendData === 'function') {
           window.client.sendData(command + '\\r');
           return;
