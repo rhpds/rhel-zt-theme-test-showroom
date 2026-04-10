@@ -6,14 +6,14 @@ Use the *Terminal (Node)* tab for node tasks and *Terminal (Bastion)* for bastio
 
 == Task 1: Create the project directory on node
 
-[source,sh,role="send-to-terminal2"]
+[source,sh,role="send-to-terminal"]
 ----
 mkdir -p /home/lab-user/myproject
 ----
 
 == Task 2: Create a README file on node
 
-[source,sh,role="send-to-terminal2"]
+[source,sh,role="send-to-terminal"]
 ----
 echo '# My Project' > /home/lab-user/myproject/README.md
 ----
@@ -27,7 +27,7 @@ touch /home/lab-user/lab-notes.txt
 
 === Verify
 
-[source,sh,role="send-to-terminal2"]
+[source,sh,role="send-to-terminal"]
 ----
 ls /home/lab-user/myproject/
 ----
